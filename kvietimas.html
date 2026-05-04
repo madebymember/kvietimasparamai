@@ -1,11 +1,198 @@
 <!DOCTYPE html>
 <html lang="lt">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>APVIS – Kvietimas</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>APVIS – Kvietimas</title>
+
+  <style>
+    :root{
+      --green:#15803d; --green-dark:#166534; --green-soft:#dcfce7;
+      --yellow:#92400e; --yellow-bg:#fef3c7;
+      --red:#991b1b; --red-bg:#fee2e2;
+      --gray:#6b7280; --bg:#f9fafb; --card:#ffffff; --border:#e5e7eb; --blue:#1d4ed8;
+    }
+
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg)}
+    a{text-decoration:none;color:inherit}
+
+    header{background:#fff;border-bottom:1px solid var(--border)}
+    .header-inner{max-width:1200px;margin:0 auto;padding:16px 24px;display:flex;justify-content:space-between;align-items:center}
+    .logo{font-size:20px;font-weight:600;color:var(--green)}
+    nav a{margin-left:24px;font-size:14px;color:var(--gray)}
+    nav a:hover{color:var(--green)}
+
+    .container{max-width:1200px;margin:0 auto;padding:24px}
+    .breadcrumb{font-size:14px;color:var(--gray);margin-bottom:16px}
+
+    .grid{display:grid;grid-template-columns:2fr 1fr;gap:32px}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+
+    .card{background:#fff;border-radius:16px;padding:24px;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+    .card + .card{margin-top:24px}
+
+    h1{margin:0 0 8px;font-size:26px}
+    h2{margin:0 0 12px;font-size:18px}
+    p{color:var(--gray);line-height:1.6}
+
+    .badge{display:inline-block;padding:6px 12px;border-radius:999px;font-size:12px;font-weight:600;margin-bottom:12px}
+    .open{background:var(--green-soft);color:var(--green)}
+    .planned{background:var(--yellow-bg);color:var(--yellow)}
+    .closed{background:var(--red-bg);color:var(--red)}
+
+    .remaining{font-size:13px;font-weight:600;margin-bottom:8px}
+    .remaining.last-day{
+      background:var(--red);
+      color:#fff;
+      padding:4px 8px;
+      border-radius:6px;
+      display:inline-block;
+    }
+
+    .btn{display:block;text-align:center;padding:14px 16px;border-radius:12px;font-weight:600}
+    .btn-primary{background:var(--green);color:#fff}
+    .btn-primary:hover{background:var(--green-dark)}
+    .btn-disabled{background:#f3f4f6;color:#9ca3af}
+
+    .meta{font-size:14px}
+    .meta-row{display:flex;justify-content:space-between;margin-bottom:8px}
+    .meta-row span:first-child{color:var(--gray)}
+
+    /* Dokumentai */
+    .docs{display:flex;flex-direction:column;gap:12px}
+    .doc-item{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:12px 16px;
+      border:1px solid var(--border);
+      border-radius:12px;
+      background:#fff;
+    }
+    .doc-left{display:flex;align-items:center;gap:12px}
+    .doc-icon{
+      width:36px;height:36px;border-radius:8px;
+      background:#e0e7ff;color:var(--blue);
+      display:flex;align-items:center;justify-content:center;
+      font-weight:700;
+    }
+    .doc-action{color:var(--blue);font-size:14px}
+  </style>
 </head>
+
 <body>
-<h2>Naudokite galutinę canvas versiją</h2>
+<header>
+  <div class="header-inner">
+    <div class="logo">APVIS</div>
+    <nav>
+      <a href="index.html">Paskelbti kvietimai</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <div class="breadcrumb">Paskelbti kvietimai &gt; <span id="crumbTitle">...</span></div>
+
+  <div class="grid">
+    <!-- KAIRĖ -->
+    <section>
+      <div class="card">
+        <span id="statusBadge" class="badge"></span>
+        <div id="remaining" class="remaining"></div>
+        <h1 id="title"></h1>
+        <p id="description"></p>
+      </div>
+
+      <div class="card">
+        <h2>Kvietimo dokumentai</h2>
+        <div id="documents" class="docs"></div>
+      </div>
+    </section>
+
+    <!-- DEŠINĖ -->
+    <aside>
+      <div class="card">
+        <a id="cta" class="btn"></a>
+      </div>
+
+      <div class="card meta">
+        <div class="meta-row"><span>Pradžia</span><strong id="startDate"></strong></div>
+        <div class="meta-row"><span>Pabaiga</span><strong id="endDate"></strong></div>
+        <div class="meta-row"><span>Kvietimo kodas</span><strong id="code"></strong></div>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<script>
+  const MS_DAY = 1000 * 60 * 60 * 24;
+  const today = new Date();
+
+  function getInvitationStatus(start, end) {
+    if (today < start) {
+      const d = Math.ceil((start - today) / MS_DAY);
+      return { status:'planned', label:'Planuojamas', info:`Prasidės po ${d} d.` };
+    }
+    if (today > end) {
+      return { status:'closed', label:'Užbaigtas', info:'Kvietimas pasibaigęs' };
+    }
+    const daysLeft = Math.ceil((end - today) / MS_DAY);
+    if (daysLeft <= 1) {
+      return { status:'open', label:'Atviras', info:'PASKUTINĖ DIENA', variant:'last-day' };
+    }
+    return { status:'open', label:'Atviras', info:`Liko ${daysLeft} d.` };
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+
+  fetch('data/kvietimai.json')
+    .then(r => r.json())
+    .then(data => {
+      const kv = data.find(k => k.id === id);
+      if (!kv) return alert('Kvietimas nerastas');
+
+      const start = new Date(kv.start);
+      const end = new Date(kv.end);
+      const res = getInvitationStatus(start, end);
+
+      document.getElementById('crumbTitle').textContent = kv.pavadinimas;
+      document.getElementById('title').textContent = kv.pavadinimas;
+      document.getElementById('description').textContent = kv.aprasymas;
+      document.getElementById('startDate').textContent = kv.start;
+      document.getElementById('endDate').textContent = kv.end;
+      document.getElementById('code').textContent = kv.id;
+
+      const badge = document.getElementById('statusBadge');
+      badge.textContent = res.label;
+      badge.className = `badge ${res.status}`;
+
+      const rem = document.getElementById('remaining');
+      rem.textContent = res.info;
+      if (res.variant === 'last-day') rem.classList.add('last-day');
+
+      const cta = document.getElementById('cta');
+      if (res.status === 'open') {
+        cta.textContent = 'Teikti paraišką';
+        cta.className = 'btn btn-primary';
+      } else {
+        cta.textContent = res.label;
+        cta.className = 'btn btn-disabled';
+      }
+
+      const docs = document.getElementById('documents');
+      (kv.dokumentai || []).forEach(d => {
+        docs.innerHTML += `
+          <div class="doc-item">
+            <div class="doc-left">
+              <div class="doc-icon">PDF</div>
+              <div>${d.pavadinimas}</div>
+            </div>
+            <a class="doc-action" href="${d.url}" target="_blank">Atsisiųsti</a>
+          </div>`;
+      });
+    });
+</script>
 </body>
 </html>
