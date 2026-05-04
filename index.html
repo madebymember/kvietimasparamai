@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="lt"><head>
+<html lang="lt">
+<head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>APVIS – Kvietimo prototipas</title>
@@ -7,11 +8,17 @@
     :root {
       --green: #15803d;
       --green-dark: #166534;
+      --green-soft: #dcfce7;
+      --gray: #6b7280;
+      --gray-soft: #f3f4f6;
       --bg: #f9fafb;
       --text: #1f2937;
-      --muted: #6b7280;
       --card: #ffffff;
       --border: #e5e7eb;
+      --yellow: #92400e;
+      --yellow-bg: #fef3c7;
+      --red: #991b1b;
+      --red-bg: #fee2e2;
     }
 
     * { box-sizing: border-box; }
@@ -21,133 +28,69 @@
       background: var(--bg);
       color: var(--text);
     }
-
-
     a { color: inherit; text-decoration: none; }
 
 
     /* Header */
-    header {
-      background: #fff;
-      border-bottom: 1px solid var(--border);
-    }
+    header { background: #fff; border-bottom: 1px solid var(--border); }
     .header-inner {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 16px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      max-width: 1200px; margin: 0 auto; padding: 16px 24px;
+      display: flex; justify-content: space-between; align-items: center;
     }
-    .logo {
-      font-size: 20px;
-      font-weight: 600;
-      color: var(--green);
-    }
-    nav a {
-      margin-left: 24px;
-      font-size: 14px;
-      color: var(--muted);
-    }
+    .logo { font-size: 20px; font-weight: 600; color: var(--green); }
+    nav a { margin-left: 24px; font-size: 14px; color: var(--gray); }
     nav a:hover { color: var(--green); }
 
-
     /* Layout */
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 24px 64px;
-    }
-
-
-    .breadcrumb {
-      font-size: 14px;
-      color: var(--muted);
-      padding: 16px 0;
-    }
-
-
-    .grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 32px;
-    }
-
-
-    @media (max-width: 900px) {
-      .grid { grid-template-columns: 1fr; }
-    }
-
-
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px 64px; }
+    .breadcrumb { font-size: 14px; color: var(--gray); padding: 16px 0; }
+    .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 32px; }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
     /* Cards */
     .card {
-      background: var(--card);
-      border-radius: 16px;
-      padding: 24px;
+      background: var(--card); border-radius: 16px; padding: 24px;
       box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
-
-
     .card + .card { margin-top: 24px; }
 
 
     h1 { font-size: 26px; margin: 0 0 8px; }
     h2 { font-size: 18px; margin: 0 0 8px; }
-    p { color: var(--muted); line-height: 1.6; }
-
-
-    ul { margin: 0; padding-left: 18px; color: var(--muted); }
-    li { margin-bottom: 4px; }
-
-
-    /* Sidebar */
-    .status {
-      color: var(--green);
-      font-weight: 600;
-      margin-bottom: 16px;
+    p { color: var(--gray); line-height: 1.6; }
+    ul { margin: 0; padding-left: 18px; color: var(--gray); }
+    /* Status badges */
+    .badge {
+      display: inline-block; padding: 6px 10px; border-radius: 999px;
+      font-size: 12px; font-weight: 600; margin-bottom: 16px;
     }
-
-
+    .open { background: var(--green-soft); color: var(--green); }
+    .planned { background: var(--yellow-bg); color: var(--yellow); }
+    .closed { background: var(--red-bg); color: var(--red); }
+    /* Buttons */
     .btn {
-      display: block;
-      width: 100%;
-      background: var(--green);
-      color: #fff;
-      text-align: center;
-      padding: 14px 16px;
-      border-radius: 12px;
-      font-weight: 500;
+      display: block; width: 100%; text-align: center;
+      padding: 14px 16px; border-radius: 12px; font-weight: 600;
     }
-    .btn:hover { background: var(--green-dark); }
-
-
-    .meta {
-      font-size: 14px;
+    .btn-primary { background: var(--green); color: #fff; }
+    .btn-primary:hover { background: var(--green-dark); }
+    .btn-disabled {
+      background: var(--gray-soft); color: var(--gray);
+      cursor: not-allowed;
     }
-    .meta-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 8px;
-    }
-    .meta-row span:first-child { color: var(--muted); }
 
-
+    /* Meta */
+    .meta { font-size: 14px; }
+    .meta-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+    .meta-row span:first-child { color: var(--gray); }
     /* Footer */
-    footer {
-      background: #fff;
-      border-top: 1px solid var(--border);
-    }
+    footer { background: #fff; border-top: 1px solid var(--border); }
     .footer-inner {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 24px;
-      font-size: 14px;
-      color: var(--muted);
+      max-width: 1200px; margin: 0 auto; padding: 24px;
+      font-size: 14px; color: var(--gray);
     }
   </style>
 </head>
 <body>
-
 
 <header>
   <div class="header-inner">
@@ -170,56 +113,36 @@
     <section>
       <div class="card">
         <h1>Fizinių asmenų vieno ar dviejų butų gyvenamųjų namų atnaujinimas</h1>
-        <p>
-          Šis kvietimas skirtas fiziniams asmenims, siekiantiems pagerinti gyvenamojo
-          pastato energinį efektyvumą.
-        </p>
+        <p>Prototipas su skirtingomis kvietimo būsenomis.</p>
       </div>
+
 
       <div class="card">
         <h2>Kvietimo tikslas</h2>
-        <p>
-          Skatinti individualių gyvenamųjų namų atnaujinimą, mažinant energijos
-          suvartojimą ir šiltnamio efektą sukeliančių dujų emisijas.
-        </p>
-
-        <h2 style="margin-top:24px">Galimi pareiškėjai</h2>
-        <ul>
-          <li>Fiziniai asmenys</li>
-          <li>Namų savininkai</li>
-          <li>Bendraturčiai</li>
-        </ul>
-
-        <h2 style="margin-top:24px">Finansuojamos veiklos</h2>
-        <ul>
-          <li>Šilumos izoliacijos gerinimas</li>
-          <li>Langų ir durų keitimas</li>
-          <li>Šildymo sistemų modernizavimas</li>
-        </ul>
+        <p>Skatinti individualių gyvenamųjų namų atnaujinimą.</p>
       </div>
     </section>
 
-    <!-- Dešinė pusė -->
+
+    <!-- Dešinė pusė – būsenų pavyzdžiai -->
     <aside>
+      <!-- ATIDARYTAS -->
       <div class="card">
-        <div class="meta">Kvietimo būsena</div>
-        <div class="status">Atviras</div>
-        <a class="btn" href="#">Teikti paraišką</a>
+        <span class="badge open">Atviras</span>
+        <a class="btn btn-primary" href="#">Teikti paraišką</a>
       </div>
 
-      <div class="card meta">
-        <div class="meta-row">
-          <span>Kvietimo kodas</span>
-          <span><strong>KN-2025-04</strong></span>
-        </div>
-        <div class="meta-row">
-          <span>Pradžia</span>
-          <span><strong>2025-04-01</strong></span>
-        </div>
-        <div class="meta-row">
-          <span>Pabaiga</span>
-          <span><strong>2025-06-30</strong></span>
-        </div>
+      <!-- PLANUOJAMAS -->
+      <div class="card">
+        <span class="badge planned">Planuojamas</span>
+        <a class="btn btn-disabled">Paraiškų teikimas dar neprasidėjo</a>
+      </div>
+
+
+      <!-- UŽBAIGTAS -->
+      <div class="card">
+        <span class="badge closed">Užbaigtas</span>
+        <a class="btn btn-disabled">Paraiškų teikimas baigtas</a>
       </div>
     </aside>
   </div>
@@ -227,7 +150,7 @@
 
 <footer>
   <div class="footer-inner">
-    © 2026 Aplinkos projektų valdymo agentūra · GitHub Pages prototipas
+    © 2026 Aplinkos projektų valdymo agentūra · Būsenų prototipas
   </div>
 </footer>
 
