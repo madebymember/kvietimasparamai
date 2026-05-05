@@ -1,187 +1,62 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="lt">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>APVIS – Kvietimų sąrašas</title>
-
-  <style>
-    :root{
-      --green:#15803d; --green-dark:#166534; --green-soft:#dcfce7;
-      --yellow:#92400e; --yellow-bg:#fef3c7;
-      --red:#991b1b; --red-bg:#fee2e2;
-      --gray:#6b7280; --bg:#f9fafb; --card:#ffffff; --border:#e5e7eb;
-    }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg)}
-    a{text-decoration:none;color:inherit}
-
-    header{background:#fff;border-bottom:1px solid var(--border)}
-    .header-inner{max-width:1200px;margin:0 auto;padding:16px 24px;display:flex;justify-content:space-between;align-items:center}
-    .logo{font-size:20px;font-weight:600;color:var(--green)}
-    nav a{margin-left:24px;font-size:14px;color:var(--gray)}
-    nav a:hover{color:var(--green)}
-
-    .container{max-width:1200px;margin:0 auto;padding:24px}
-    h1{margin:0 0 8px;font-size:26px}
-    .subtitle{color:var(--gray);margin-bottom:24px}
-
-    .filters{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap}
-    .filter-btn{padding:8px 14px;border-radius:999px;border:1px solid var(--border);background:#fff;font-size:14px;cursor:pointer}
-    .filter-btn.active{background:var(--green);color:#fff;border-color:var(--green)}
-
-    .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:24px}
-
-    .card{
-      background:var(--card);
-      border-radius:16px;
-      padding:20px;
-      box-shadow:0 1px 2px rgba(0,0,0,.05);
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-
-    .badge{display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;width:max-content}
-    .open{background:var(--green-soft);color:var(--green)}
-    .planned{background:var(--yellow-bg);color:var(--yellow)}
-    .closed{background:var(--red-bg);color:var(--red)}
-
-    .title{font-weight:600}
-    .dates{font-size:13px;color:var(--gray)}
-    .desc{font-size:14px;color:var(--gray)}
-
-    .remaining{font-size:13px;font-weight:600}
-    .remaining.green{color:var(--green)}
-    .remaining.last-day{
-      background:var(--red);
-      color:#fff;
-      padding:4px 8px;
-      border-radius:6px;
-      text-align:center;
-    }
-
-    .btn{margin-top:6px;padding:10px 14px;border-radius:10px;font-weight:600;font-size:14px;text-align:center}
-    .btn-primary{background:var(--green);color:#fff}
-    .btn-primary:hover{background:var(--green-dark)}
-    .btn-disabled{background:#f3f4f6;color:#9ca3af}
-
-    /* Tuščia būsena */
-    .empty{
-      display:none;
-      grid-column:1/-1;
-      border:1px dashed var(--border);
-      border-radius:16px;
-      padding:32px;
-      text-align:center;
-      color:var(--gray);
-      background:#fff;
-    }
-    .empty h3{margin:0 0 8px;color:#1f2937}
-  </style>
+  <title>APVIS kvietimai</title>
+  <meta name="description" content="APVIS kvietimų sąrašas" />
+  <link rel="stylesheet" href="css/style.css" />
 </head>
-
 <body>
-<header>
-  <div class="header-inner">
-    <div class="logo">APVIS</div>
-    <nav>
-      <a href="#">Paskelbti kvietimai</a>
-    </nav>
-  </div>
-</header>
+  <header class="site-header">
+    <div class="container header-grid">
+      <div>
+        <p class="eyebrow">APVIS</p>
+        <h1>Kvietimai</h1>
+        <p class="lead">Aktualūs, planuojami ir užbaigti kvietimai teikti paraiškas.</p>
+      </div>
+      <div class="header-card" aria-label="Informacija">
+        <strong>Duomenų šaltinis</strong>
+        <span>JSON / API per <code>fetch()</code></span>
+      </div>
+    </div>
+  </header>
 
-<main class="container">
-  <h1>Paskelbti kvietimai</h1>
-  <div class="subtitle">Duomenys kraunami iš JSON</div>
+  <main class="container main-content">
+    <section class="toolbar" aria-label="Kvietimų filtrai">
+      <div>
+        <h2>Kvietimų sąrašas</h2>
+        <p id="resultsSummary" class="muted">Kraunama...</p>
+      </div>
 
-  <div class="filters">
-    <button class="filter-btn active" data-filter="all">Visi</button>
-    <button class="filter-btn" data-filter="open">Atviri</button>
-    <button class="filter-btn" data-filter="planned">Planuojami</button>
-    <button class="filter-btn" data-filter="closed">Užbaigti</button>
-  </div>
+      <div class="filters" role="group" aria-label="Filtruoti kvietimus pagal būseną">
+        <button class="filter-button is-active" data-filter="all" type="button">Visi</button>
+        <button class="filter-button" data-filter="open" type="button">Atviri</button>
+        <button class="filter-button" data-filter="planned" type="button">Planuojami</button>
+        <button class="filter-button" data-filter="closed" type="button">Užbaigti</button>
+      </div>
+    </section>
 
-  <div class="list" id="list"></div>
+    <section id="invitationsList" class="cards-grid" aria-live="polite"></section>
 
-  <div id="emptyState" class="empty">
-    <h3>Šiuo metu kvietimų nėra</h3>
-    <p>Pasirinktam filtrui nėra aktyvių kvietimų.</p>
-  </div>
-</main>
+    <section id="emptyState" class="empty-state" hidden>
+      <h2>Pagal pasirinktą filtrą kvietimų nėra</h2>
+      <p>Pabandykite pasirinkti kitą būseną arba patikrinkite duomenų šaltinį.</p>
+    </section>
 
-<script>
-  const MS_DAY = 1000 * 60 * 60 * 24;
-  const today = new Date();
+    <section id="errorState" class="error-state" hidden>
+      <h2>Nepavyko įkelti kvietimų</h2>
+      <p>Patikrinkite, ar egzistuoja <code>data/kvietimai.json</code>, ar GitHub Pages publikuoja visus failus.</p>
+    </section>
+  </main>
 
-  function getInvitationStatus(start, end) {
-    if (today < start) {
-      const d = Math.ceil((start - today) / MS_DAY);
-      return { status:'planned', label:'Planuojamas', info:`Prasidės po ${d} d.` };
-    }
-    if (today > end) {
-      return { status:'closed', label:'Užbaigtas', info:'Kvietimas pasibaigęs' };
-    }
-    const daysLeft = Math.ceil((end - today) / MS_DAY);
-    if (daysLeft <= 1) {
-      return { status:'open', label:'Atviras', info:'PASKUTINĖ DIENA', variant:'last-day' };
-    }
-    return { status:'open', label:'Atviras', info:`Liko ${daysLeft} d.`, variant:'green' };
-  }
+  <footer class="site-footer">
+    <div class="container">
+      <p>APVIS kvietimų prototipas. Statinis sprendimas GitHub Pages aplinkai.</p>
+    </div>
+  </footer>
 
-  fetch('data/kvietimai.json')
-    .then(r => r.json())
-    .then(renderList);
-
-  function renderList(data) {
-    const list = document.getElementById('list');
-    list.innerHTML = '';
-
-    data.forEach(inv => {
-      const start = new Date(inv.start);
-      const end = new Date(inv.end);
-      const res = getInvitationStatus(start, end);
-
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.dataset.status = res.status;
-
-      card.innerHTML = `
-        <span class="badge ${res.status}">${res.label}</span>
-        <div class="title">${inv.pavadinimas}</div>
-        <div class="dates">${inv.start} → ${inv.end}</div>
-        <div class="remaining ${res.variant || ''}">${res.info}</div>
-        <div class="desc">${inv.aprasymas}</div>
-        ${
-          res.status === 'open'
-            ? `<a class="btn btn-primary" href="kvietimas.html?id=${inv.id}">Peržiūrėti kvietimą</a>`
-            : `<div class="btn btn-disabled">${res.label}</div>`
-        }
-      `;
-      list.appendChild(card);
-    });
-
-    applyFilter('all');
-  }
-
-  const filterButtons = document.querySelectorAll('.filter-btn');
-  filterButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      filterButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      applyFilter(btn.dataset.filter);
-    });
-  });
-
-  function applyFilter(filter) {
-    let visible = 0;
-    document.querySelectorAll('.card').forEach(card => {
-      const show = filter === 'all' || card.dataset.status === filter;
-      card.style.display = show ? 'flex' : 'none';
-      if (show) visible++;
-    });
-    document.getElementById('emptyState').style.display = visible === 0 ? 'block' : 'none';
-  }
-</script>
+  <script src="js/status.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
