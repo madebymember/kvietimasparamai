@@ -1,9 +1,65 @@
-[
-  {
-    "id": "KN-2025-04",
-    "pavadinimas": "Vieno ar dviejų butų gyvenamųjų namų atnaujinimas",
-    "aprasymas": "Parama fiziniams asmenims gyvenamųjų namų energiniam efektyvumui didinti.",
-    "start": "2025-04-01",
-    "end": "2025-06-30"
-  }
-]
+{
+  "kvietimai": [
+    {
+      "id": "APVIS-2026-01",
+      "pavadinimas": "Atsinaujinančių energijos išteklių diegimas viešuosiuose pastatuose",
+      "aprašymas": "Kvietimas skirtas viešojo sektoriaus subjektams, planuojantiems diegti saulės elektrines ir kitus atsinaujinančių išteklių sprendimus.",
+      "start": "2026-04-15",
+      "end": "2026-05-20",
+      "dokumentai": [
+        {
+          "pavadinimas": "Kvietimo sąlygos",
+          "tipas": "PDF",
+          "url": "docs/apvis-2026-01-salygos.pdf"
+        },
+        {
+          "pavadinimas": "Paraiškos forma",
+          "tipas": "DOCX",
+          "url": "docs/apvis-2026-01-paraiska.docx"
+        }
+      ]
+    },
+    {
+      "id": "APVIS-2026-02",
+      "pavadinimas": "Daugiabučių modernizavimo priemonių finansavimas",
+      "aprašymas": "Priemonė skirta energinio efektyvumo didinimui daugiabučiuose namuose ir susijusių dokumentų parengimui.",
+      "start": "2026-05-05",
+      "end": "2026-05-05",
+      "dokumentai": [
+        {
+          "pavadinimas": "Finansavimo gairės",
+          "tipas": "PDF",
+          "url": "docs/apvis-2026-02-gaires.pdf"
+        }
+      ]
+    },
+    {
+      "id": "APVIS-2026-03",
+      "pavadinimas": "Taršaus kuro keitimas namų ūkiuose",
+      "aprašymas": "Kvietimas gyventojams, siekiantiems pakeisti neefektyvius šildymo įrenginius mažiau taršiais sprendimais.",
+      "start": "2026-06-01",
+      "end": "2026-07-31",
+      "dokumentai": [
+        {
+          "pavadinimas": "Reikalavimai pareiškėjams",
+          "tipas": "PDF",
+          "url": "docs/apvis-2026-03-reikalavimai.pdf"
+        }
+      ]
+    },
+    {
+      "id": "APVIS-2025-12",
+      "pavadinimas": "Elektromobilių įkrovimo infrastruktūros plėtra",
+      "aprašymas": "Užbaigtas kvietimas savivaldybėms ir įstaigoms dėl viešosios įkrovimo infrastruktūros plėtros.",
+      "start": "2025-11-01",
+      "end": "2025-12-15",
+      "dokumentai": [
+        {
+          "pavadinimas": "Kvietimo archyvas",
+          "tipas": "PDF",
+          "url": "docs/apvis-2025-12-archyvas.pdf"
+        }
+      ]
+    }
+  ]
+}
