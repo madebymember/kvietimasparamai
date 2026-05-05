@@ -1,76 +1,87 @@
-/**
- * status.js
- * ----------------------------------------------------
- * VIENINTELĖ kvietimų būsenų ir terminų logika.
- * Naudojama:
- *  - kvietimų sąraše (index.html)
- *  - vieno kvietimo puslapyje (kvietimas.html)
- *
- * Keiti čia → keičiasi visur.
- */
+/*
+  Vienintelė kvietimų būsenų logikos vieta.
+  Visi puslapiai turi naudoti getInvitationStatus(startDate, endDate, now?).
+*/
+(function (global) {
+  'use strict';
 
-const MS_DAY = 1000 * 60 * 60 * 24;
-
-/**
- * Nustato kvietimo būseną ir susijusią informaciją.
- *
- * @param {Date} startDate  – kvietimo pradžios data
- * @param {Date} endDate    – kvietimo pabaigos data
- * @param {Date} [now]      – dabartinė data (testams galima perduoti kitą)
- *
- * @returns {{
- *   status: 'open' | 'planned' | 'closed',
- *   label: string,
- *   info: string,
- *   variant?: 'last-day' | 'green'
- * }}
- */
-function getInvitationStatus(startDate, endDate, now = new Date()) {
-
-  // 🟡 Planuojamas (dar neprasidėjo)
-  if (now < startDate) {
-    const daysToStart = Math.ceil((startDate - now) / MS_DAY);
-
-    return {
-      status: 'planned',
-      label: 'Planuojamas',
-      info: `Prasidės po ${daysToStart} d.`
-    };
+  function parseDate(value) {
+    if (!value) return null;
+    var date = new Date(value + 'T00:00:00');
+    return Number.isNaN(date.getTime()) ? null : date;
   }
 
-  // 🔴 Užbaigtas
-  if (now > endDate) {
-    return {
-      status: 'closed',
-      label: 'Užbaigtas',
-      info: 'Kvietimas pasibaigęs'
-    };
+  function startOfDay(date) {
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
   }
 
-  // 🟢 Atviras
-  const daysLeft = Math.ceil((endDate - now) / MS_DAY);
+  function diffDays(from, to) {
+    var msPerDay = 24 * 60 * 60 * 1000;
+    return Math.round((startOfDay(to) - startOfDay(from)) / msPerDay);
+  }
 
-  // 🔥 PASKUTINĖ DIENA
-  if (daysLeft <= 1) {
+  function getInvitationStatus(startDate, endDate, now) {
+    var today = startOfDay(now ? new Date(now) : new Date());
+    var start = parseDate(startDate);
+    var end = parseDate(endDate);
+
+    if (!start || !end) {
+      return {
+        key: 'unknown',
+        label: 'Nežinoma',
+        cssClass: 'status-unknown',
+        daysLeft: null,
+        isLastDay: false,
+        ctaLabel: 'Informacija ruošiama',
+        ctaEnabled: false,
+        message: 'Kvietimo datos nenurodytos arba neteisingos.'
+      };
+    }
+
+    if (today < startOfDay(start)) {
+      var daysUntilStart = diffDays(today, start);
+
+      return {
+        key: 'planned',
+        label: 'Planuojamas',
+        cssClass: 'status-planned',
+        daysLeft: null,
+        daysUntilStart: daysUntilStart,
+        isLastDay: false,
+        ctaLabel: 'Kvietimas dar neprasidėjo',
+        ctaEnabled: false,
+        message: 'Kvietimas prasidės po ' + daysUntilStart + ' d.'
+      };
+    }
+
+    if (today > startOfDay(end)) {
+      return {
+        key: 'closed',
+        label: 'Užbaigtas',
+        cssClass: 'status-closed',
+        daysLeft: 0,
+        isLastDay: false,
+        ctaLabel: 'Kvietimas užbaigtas',
+        ctaEnabled: false,
+        message: 'Paraiškų teikimo laikotarpis pasibaigė.'
+      };
+    }
+
+    var daysLeft = diffDays(today, end);
+
     return {
-      status: 'open',
+      key: 'open',
       label: 'Atviras',
-      info: 'PASKUTINĖ DIENA',
-      variant: 'last-day'
+      cssClass: 'status-open',
+      daysLeft: daysLeft,
+      isLastDay: daysLeft === 0,
+      ctaLabel: daysLeft === 0 ? 'Teikti paraišką šiandien' : 'Teikti paraišką',
+      ctaEnabled: true,
+      message: daysLeft === 0
+        ? 'Paskutinė paraiškų teikimo diena.'
+        : 'Iki pabaigos liko ' + daysLeft + ' d.'
     };
   }
 
-  // ✅ Atviras (liko daugiau dienų)
-  return {
-    status: 'open',
-    label: 'Atviras',
-    info: `Liko ${daysLeft} d.`,
-    variant: 'green'
-  };
-}
-
-/* ----------------------------------------------------
- * Jei nenaudoji modulių (GitHub Pages default),
- * funkcija bus pasiekiama globaliai per `window`.
- * -------------------------------------------------- */
-window.getInvitationStatus = getInvitationStatus;
+  global.getInvitationStatus = getInvitationStatus;
+})(window);
